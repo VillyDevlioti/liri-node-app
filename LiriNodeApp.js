@@ -212,8 +212,8 @@ function printMovieInfo(data) //This function prints the movie info
         //calling the info again.
     }
 }
-
-function printSongInfo(data) {
+//---------------------------------------------------------------------------------------------------------------------
+function printSongInfo(data) { //This function prints information about the song
     console.log("-------------------------------------");
     console.log("Artist:", data.artists[0].name);
     console.log("Song title:", data.name);
@@ -221,8 +221,8 @@ function printSongInfo(data) {
     console.log("Album:", data.album.name);
     console.log("-------------------------------------");
 }
-
-function doWhatItSays() {
+//---------------------------------------------------------------------------------------------------------------------
+function doWhatItSays() { //This one checks for the song in the file
     fs.readFile("random.txt","utf8", function(error, data) {
         if (error) {
             return console.log(error);
