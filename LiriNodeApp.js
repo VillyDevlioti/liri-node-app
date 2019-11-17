@@ -35,7 +35,7 @@ inquirer
 
     });
 //---------------------------------------------------------------------------------------------------------------------
-function getBandInfo() {
+function getBandInfo() { //This function hits the bandintown API
     inquirer
     .prompt([
         {
@@ -76,7 +76,7 @@ function getBandInfo() {
 }
 //---------------------------------------------------------------------------------------------------------------------
 
-function getMovieInfo() {
+function getMovieInfo() { //This function hits the omdb API
     inquirer
     .prompt([
         {
@@ -116,7 +116,7 @@ function getMovieInfo() {
     });
 }
 //---------------------------------------------------------------------------------------------------------------------
-function getSongInfo(){
+function getSongInfo(){ //This function hits the Spotify API
     inquirer
     .prompt([
         {
