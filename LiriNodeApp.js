@@ -1,10 +1,9 @@
-//var spotify = require("node-Spotify-API");
-//var spotify = new Spotify(keys.spotify); //load the package
-var axios = require("axios"); //load the package
-var moment = require("moment"); //load the package
-var keys = require("./keys.js");
-var Spotify = require('node-spotify-api');
 require("dotenv").config();
+var keys = require("./keys.js");
+var fs = require("fs");
+var Spotify = require("node-spotify-api");
+var moment = require("moment");
+var axios = require("axios");
 var inquirer = require("inquirer"); //load the package
 
 inquirer
@@ -114,7 +113,7 @@ function getMovieInfo() {
             });
     });
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 function getSongInfo(){
     inquirer
     .prompt([
@@ -125,18 +124,19 @@ function getSongInfo(){
         }
     ])
     .then(function(inquirerResponse){
-        let spotifySearch = new Spotify(keys.spotify);
+        let spotify = new Spotify(keys);
         console.log("You're searching for song:", inquirerResponse.song);
 
-        spotifySearch.search({ type: 'track', query: 'inquirerResponse.song' }, function(err, data) {
+        spotify.search({ type: 'track', query: 'inquirerResponse.song' }, function(err, data) {
             if (err) {
               return console.log('Error occurred: ' + err);
             }
+        console.log(data);
         });
     });
 
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 //this function replaces " " with "%20" in order to form a proper query
 function replaceSpace(input) 
 {
@@ -146,7 +146,7 @@ function replaceSpace(input)
     }
     return input;
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 function printEventInfo(data) //This function prints the first 3 events
 {
     if (data[0]) //checking if there's data
@@ -168,7 +168,7 @@ function printEventInfo(data) //This function prints the first 3 events
         //calling the info again.
     }
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 function printMovieInfo(data) //This function prints the movie info
 {
     console.log(data[0]);
