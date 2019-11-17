@@ -8,7 +8,7 @@ var inquirer = require("inquirer"); //load the package
 let spotify = new Spotify(keys.spotify);
 
 inquirer
-  .prompt([
+.prompt([
     //Here we create a basic text prompt.
         {
             type: "list",
@@ -33,9 +33,10 @@ inquirer
                 break;
         }
 
-    });
+    }); 
+
 //---------------------------------------------------------------------------------------------------------------------
-function getBandInfo() { //This function hits the bandintown API
+function getBandInfo() { //This function calls the bandintown API
     inquirer
     .prompt([
         {
@@ -48,35 +49,13 @@ function getBandInfo() { //This function hits the bandintown API
         
         queryURL="https://rest.bandsintown.com/artists/" + replaceSpace(inquirerResponse.artist) + "/events?app_id=codingbootcamp";
         console.log("Query URL is:", queryURL);
-        axios
-            .get(queryURL)
-            .then(function(response) {
-                // If the axios was successful...
-                // Then log the body from the site!
-                printEventInfo(response.data);
-            })
-            .catch(function(error) { //function catching
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an object that comes back with details pertaining to the error that occurred.
-                    console.log(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log("Error", error.message);
-                }
-                console.log(error.config);
-            });
+        bandAPI(queryURL);
+
     });
 }
 //---------------------------------------------------------------------------------------------------------------------
 
-function getMovieInfo() { //This function hits the omdb API
+function getMovieInfo() { //This function calls the omdb API
     inquirer
     .prompt([
         {
@@ -89,34 +68,11 @@ function getMovieInfo() { //This function hits the omdb API
         console.log(replaceSpace(inquirerResponse.movie));
         queryURL = "http://www.omdbapi.com/?t="+ replaceSpace(inquirerResponse.movie) +"&y=&plot=short&apikey=trilogy"
         console.log("Query URL is:", queryURL);
-        
-        axios
-            .get(queryURL)
-            .then(function(response){
-                printMovieInfo(response.data);
-                
-            })
-            .catch(function(error) { //function catching
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an object that comes back with details pertaining to the error that occurred.
-                    console.log(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log("Error", error.message);
-                }
-                console.log(error.config);
-            });
+        movieAPI(queryURL);
     });
 }
 //---------------------------------------------------------------------------------------------------------------------
-function getSongInfo(){ //This function hits the Spotify API
+function getSongInfo(){ //This function calls the Spotify API
     inquirer
     .prompt([
         {
@@ -127,29 +83,8 @@ function getSongInfo(){ //This function hits the Spotify API
     ])
     .then(function(inquirerResponse){
         console.log("You're searching for song:", inquirerResponse.song);
-
-        spotify
-        .search({ type: 'track', query: inquirerResponse.song })
-        .then(function(data){
-            if (data.tracks.items[0]){
-                printSongInfo(data.tracks.items[0]);
-            }
-            else
-            {
-                console.log("No song found! Defaulting to:")
-                spotify
-                    .search({ type: 'track', query: 'The Sign Ace Of Base' })
-                    .then(function(data){
-                        printSongInfo(data.tracks.items[0]);
-                    })
-                    .catch(function(err) {
-                        console.log(err);
-                    });
-            }
-        })
-        .catch(function(err) {
-            console.log(err);
-        });
+        songAPI(inquirerResponse.song);
+        
         
     });
 
@@ -228,15 +163,99 @@ function doWhatItSays() { //This one checks for the song in the file
             return console.log(error);
           }
     
-          var query = data;
-          spotify
-          .search({ type: 'track', query: query })
-          .then(function(data){
-                printSongInfo(data.tracks.items[0]);
-          })
-          .catch(function(err) {
-              console.log(err);
-          });
+        var dataArr = data.split(",");
+        console.log(dataArr);
+        if (dataArr[0] == "movie-this")
+        {
+            movieAPI(dataArr[1]);
+        }
+        else if(dataArr[0] == "concert-this")
+        {
+            bandAPI(dataArr[1]);
+        }
+        else if (dataArr[0] == "spotify-this-song")
+        {
+            songAPI(dataArr[1]);
+        }
     });
     
+}
+//---------------------------------------------------------------------------------------------------------------------
+function movieAPI(queryURL){//This function calls the omdb API
+    axios
+    .get(queryURL)
+    .then(function(response){
+        printMovieInfo(response.data);
+        
+    })
+    .catch(function(error) { //function catching
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an object that comes back with details pertaining to the error that occurred.
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+        }
+        console.log(error.config);
+    });
+} 
+//---------------------------------------------------------------------------------------------------------------------
+function songAPI(queryString){ //This function calls the Spotify API
+    spotify
+        .search({ type: 'track', query: queryString })
+        .then(function(data){
+            if (data.tracks.items[0]){
+                printSongInfo(data.tracks.items[0]);
+            }
+            else
+            {
+                console.log("No song found! Defaulting to:")
+                spotify
+                    .search({ type: 'track', query: 'The Sign Ace Of Base' })
+                    .then(function(data){
+                        printSongInfo(data.tracks.items[0]);
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    });
+            }
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+
+} 
+//---------------------------------------------------------------------------------------------------------------------
+function bandAPI(queryURL){ //This function calls the band API
+    axios
+    .get(queryURL)
+    .then(function(response) {
+        // If the axios was successful...
+        // Then log the body from the site!
+        printEventInfo(response.data);
+    })
+    .catch(function(error) { //function catching
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an object that comes back with details pertaining to the error that occurred.
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+        }
+        console.log(error.config);
+    });
 }
