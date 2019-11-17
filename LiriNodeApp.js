@@ -127,12 +127,29 @@ function getSongInfo(){
     .then(function(inquirerResponse){
         console.log("You're searching for song:", inquirerResponse.song);
 
-        spotify.search({ type: 'track', query: 'inquirerResponse.song' }, function(err, data) {
-            if (err) {
-              return console.log('Error occurred: ' + err);
+        spotify
+        .search({ type: 'track', query: inquirerResponse.song })
+        .then(function(data){
+            if (data.tracks.items[0]){
+                printSongInfo(data.tracks.items[0]);
             }
-        console.log(data);
+            else
+            {
+                console.log("No song found! Defaulting to:")
+                spotify
+                    .search({ type: 'track', query: 'The Sign Ace Of Base' })
+                    .then(function(data){
+                        printSongInfo(data.tracks.items[0]);
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    });
+            }
+        })
+        .catch(function(err) {
+            console.log(err);
         });
+        
     });
 
 }
@@ -193,4 +210,13 @@ function printMovieInfo(data) //This function prints the movie info
         console.log("Sorry, no info available!")
         //calling the info again.
     }
+}
+
+function printSongInfo(data) {
+    console.log("-------------------------------------");
+    console.log("Artist:", data.artists[0].name);
+    console.log("Song title:", data.name);
+    console.log("Preview link:", data.preview_url);
+    console.log("Album:", data.album.name);
+    console.log("-------------------------------------");
 }
