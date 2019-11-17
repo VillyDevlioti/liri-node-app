@@ -29,6 +29,7 @@ inquirer
                 getMovieInfo(); //switching to movie function
                 break;
             case "do-what-it-says":
+                doWhatItSays();
                 break;
         }
 
@@ -219,4 +220,23 @@ function printSongInfo(data) {
     console.log("Preview link:", data.preview_url);
     console.log("Album:", data.album.name);
     console.log("-------------------------------------");
+}
+
+function doWhatItSays() {
+    fs.readFile("random.txt","utf8", function(error, data) {
+        if (error) {
+            return console.log(error);
+          }
+    
+          var query = data;
+          spotify
+          .search({ type: 'track', query: query })
+          .then(function(data){
+                printSongInfo(data.tracks.items[0]);
+          })
+          .catch(function(err) {
+              console.log(err);
+          });
+    });
+    
 }
