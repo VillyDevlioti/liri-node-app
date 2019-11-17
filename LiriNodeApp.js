@@ -5,7 +5,7 @@ var Spotify = require("node-spotify-api");
 var moment = require("moment");
 var axios = require("axios");
 var inquirer = require("inquirer"); //load the package
-let spotify = new Spotify(spotify.keys);
+let spotify = new Spotify(keys.spotify);
 
 inquirer
   .prompt([
@@ -125,7 +125,6 @@ function getSongInfo(){
         }
     ])
     .then(function(inquirerResponse){
-        //let spotify = new Spotify(spotify.keys);
         console.log("You're searching for song:", inquirerResponse.song);
 
         spotify.search({ type: 'track', query: 'inquirerResponse.song' }, function(err, data) {
